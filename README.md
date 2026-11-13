@@ -1,50 +1,36 @@
-# Activity 3: Enhanced Account Class (Validation & PIN Security)
+# Activity 4: Enhanced Account Testing Suite
 
 ## Objective
-Upgrade the `Account` class with defensive programming: enforce customer age limits, initial balance rules, 4-digit PIN authentication for withdrawals, and account status management.
+Write comprehensive automated test cases to verify PIN security, status rules, age restrictions, and error handling for the enhanced `Account` class.
 
 ---
 
 ## Target File to Complete
-- `src/com/gdb/domain/Account.java`
+- `src/com/gdb/tests/TestAccount.java`
 
 ---
 
 ## Plain English Step-by-Step Instructions
 
-### Step 1: Add Private PIN Field
-Add a new private text variable `pin` to `Account.java` to store the customer's 4-digit security PIN.
+### Step 1: Test Age Validation on Account Creation
+1. Attempt to create an account with an age less than 18 (e.g., age 16) inside a try-catch block.
+2. Verify that an `IllegalArgumentException` is caught and print `[PASS]`.
 
-### Step 2: Add Constructor Validations
-Update the constructor to accept the PIN parameter and add input checks:
-1. Verify customer age is at least 18. If younger, throw an IllegalArgumentException with a clear message.
-2. Verify initial balance is not negative (must be 0 or greater). If negative, throw an IllegalArgumentException.
-3. Verify the PIN is exactly 4 numerical digits. If invalid, throw an IllegalArgumentException.
-4. Assign all valid arguments to their respective fields.
+### Step 2: Test PIN Verification on Withdrawal
+1. Create an account with PIN `"1234"` and balance 5000.0.
+2. Attempt to withdraw with a wrong PIN (e.g., `"9999"`). Verify that withdrawal returns `false` and balance remains unchanged.
+3. Attempt to withdraw with the correct PIN `"1234"`. Verify that withdrawal returns `true` and balance decreases.
 
-### Step 3: Implement PIN Validation Method
-Create a method `validatePin` that accepts an input PIN string:
-- Compare the input PIN with the stored PIN.
-- Return `true` if they match, or `false` if they do not match or if the input is empty.
+### Step 3: Test PIN Change Functionality
+1. Change the PIN from `"1234"` to `"5678"`. Verify the change returns `true`.
+2. Try withdrawing with the old PIN `"1234"`. Verify it now fails.
+3. Try withdrawing with the new PIN `"5678"`. Verify it succeeds.
 
-### Step 4: Implement PIN Change Method
-Create a method `changePin` that accepts an old PIN and a new PIN:
-1. Check if the old PIN is correct using `validatePin`. If incorrect, return `false`.
-2. Check if the new PIN is exactly 4 digits. If invalid, return `false`.
-3. If both checks pass, update the stored PIN to the new PIN and return `true`.
-
-### Step 5: Implement PIN-Protected Withdrawal
-Update the `withdraw` method to accept both the withdrawal amount and the entered PIN:
-1. Verify the entered PIN using `validatePin`. If incorrect, reject the transaction and return `false`.
-2. Verify the account status is `"ACTIVE"`. If suspended or closed, reject the transaction and return `false`.
-3. Verify the amount is positive and does not exceed the current balance.
-4. If all checks pass, subtract the amount from the balance and return `true`.
-
-### Step 6: Implement Account Status Management
-Add helper methods to change the account status:
-1. `suspend()` - Sets status to `"SUSPENDED"`.
-2. `activate()` - Sets status to `"ACTIVE"`.
-3. `close()` - Sets status to `"CLOSED"`.
+### Step 4: Test Account Suspension and Reactivation
+1. Suspend the account using `suspend()`.
+2. Attempt to withdraw with the correct PIN. Verify that the transaction fails because the account is suspended.
+3. Reactivate the account using `activate()`.
+4. Attempt withdrawal again. Verify that the transaction now succeeds.
 
 ---
 
@@ -85,13 +71,12 @@ java -cp bin com.gdb.tests.TestAccount
 
 ## Expected Output
 ```
-=== Activity 3: Enhanced Account Test ===
-Initial Balance: Rs 5000.0 | Status: ACTIVE
-Withdraw with correct PIN: SUCCESS | Balance: Rs 4000.0
-Withdraw with wrong PIN: FAILED | Balance: Rs 4000.0
-Account Suspended.
-Withdraw on SUSPENDED account: FAILED | Balance: Rs 4000.0
-Account Re-Activated.
-PIN Changed Successfully.
-Withdraw with new PIN: SUCCESS | Balance: Rs 3000.0
+=== Activity 4: Enhanced Account Test Suite ===
+Test 1 (Underage Customer Rejection): [PASS]
+Test 2 (Wrong PIN Rejection): [PASS]
+Test 3 (Correct PIN Withdrawal): [PASS]
+Test 4 (PIN Change & Old PIN Invalidation): [PASS]
+Test 5 (Suspended Account Block): [PASS]
+Test 6 (Reactivation & Success): [PASS]
+All Enhanced Account tests passed!
 ```
